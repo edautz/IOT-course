@@ -17,7 +17,7 @@ automation: !include automations.yaml
 
 
 template:
-# sensors voor tesla-style-solar-power-card
+# template sensors voor tesla-style-solar-power-card
   - sensor: 
       -  name: grid_to_house
          state: "{% if states('sensor.current_power') |float > 0 %}
@@ -57,7 +57,7 @@ template:
       - name: altherma
         state: "{{ 'Heat' }}"  
 
-# sensors voor energy dashboard
+# template sensors voor energy dashboard
   - sensor:
       - name : grid_consumption         
         state: "{% if states('sensor.current_power') |float > 0 %}
@@ -101,7 +101,7 @@ template:
 
 
 sensor:
-# sensors voor tesla-style-solar-power-card
+# random sensors energy
   - platform: random
     name: PV_total_power
     minimum: 2000
