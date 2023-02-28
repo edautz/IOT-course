@@ -1,0 +1,41 @@
+﻿Relay automatisch aanschakelen
+
+alias: Turn Relay off
+description: ""
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.iot_temperatuur
+    below: 20
+  - platform: numeric_state
+    entity_id: sensor.iot_vochtigheid
+    below: 70
+condition: []
+action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.relay
+mode: single
+
+
+
+
+Relay automatisch uitschakelen
+
+alias: Turn Relay on
+description: ""
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.iot_temperatuur
+    above: 20
+  - platform: numeric_state
+    entity_id: sensor.iot_vochtigheid
+    above: 70
+condition: []
+action:
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.relay
+mode: single
+

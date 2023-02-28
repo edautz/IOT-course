@@ -1,0 +1,13 @@
+﻿int PIN = 12;	// dit is de IO pin waarop het relais of de LED zit aangesloten
+void setup() {
+  // configureer digital pin 12 als een uitgang (actuator).
+  pinMode(PIN, OUTPUT);
+}
+
+// deze loop functie draait continu door
+void loop() {
+  digitalWrite(PIN, HIGH);   // Schakel het RELAIS aan door het spanningsniveau naar HIGH te brengen
+  delay(5000);              // wacht voor 5 seconden
+  digitalWrite(PIN, LOW);    // Schakel het RELAIS uit door het spanningsniveau naar LOW te brengen
+  delay(500);              // wacht voor een halve seconde
+}

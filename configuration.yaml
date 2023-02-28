@@ -1,0 +1,157 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+automation: !include automations.yaml
+#script: !include scripts.yaml
+#scene: !include scenes.yaml
+
+
+
+template:
+# sensors voor tesla-style-solar-power-card
+  - sensor: 
+      -  name: grid_to_house
+         state: "{% if states('sensor.current_power') |float > 0 %}
+         {{ states('sensor.current_power') | float}}
+         {% else %} {{ 0 }} 
+         {%endif%}"
+         device_class: power
+         state_class: measurement
+         unit_of_measurement: 'W'
+  - sensor: 
+      -  name: pv_to_grid
+         state: "{% if states('sensor.pv_total_power') |float > 0 and (states('sensor.pv_total_power') | float - states('sensor.house_power') | float) > 0 %}
+         {{ states('sensor.pv_total_power') | float - states('sensor.house_power') | float }}
+         {% else %} {{ 0 }} 
+         {%endif%}"
+         device_class: power
+         state_class: measurement
+         unit_of_measurement: 'W'
+  - sensor: 
+      -  name: pv_to_house
+         state: "{% if states('sensor.pv_total_power') |float > 0 %}
+         {{ states('sensor.pv_total_power') | float - states('sensor.pv_to_grid') | float }}
+         {% else %} {{ 0 }} 
+         {%endif%}"
+         device_class: power
+         state_class: measurement
+         unit_of_measurement: 'W'
+  - sensor:
+      - name: house_power
+        unit_of_measurement: 'W'
+        state: "{{ states('sensor.emon_power') | float  + states('sensor.laadpaal_power') | float }}"   
+  - sensor:
+      - name: current_power
+        unit_of_measurement: 'W'
+        state: "{{ 0 - (states('sensor.pv_total_power') | float - states('sensor.emon_power') | float -  states('sensor.laadpaal_power') | float) }}"
+  - sensor: 
+      - name: altherma
+        state: "{{ 'Heat' }}"  
+
+# sensors voor energy dashboard
+  - sensor:
+      - name : grid_consumption         
+        state: "{% if states('sensor.current_power') |float > 0 %}
+        {{ states('sensor.current_power') | float}}
+        {% else %} {{ 0 }} 
+        {%endif%}"
+        device_class: power
+        state_class: measurement
+        unit_of_measurement: 'W'
+      - name : grid_return         
+        state: "{% if states('sensor.current_power') |float < 0 %}
+        {{ 0 - (states('sensor.current_power')|float) }}
+        {% else %} {{ 0 }} 
+        {%endif%}"
+        device_class: power
+        state_class: measurement
+        unit_of_measurement: 'W'
+      - name : PV_energy         
+        state: "{{ states('sensor.PV_total_energy') }}" 
+        device_class: energy
+        state_class: total_increasing
+        unit_of_measurement: 'kWh'
+      - name : Warmtepomp_total_energy         
+        state: "{{ states('sensor.warmtepomp_energy') }}" 
+        device_class: energy
+        state_class: total_increasing
+        unit_of_measurement: 'kWh'
+      - name : Laadpaal_total_energy         
+        state: "{{ states('sensor.laadpaal_energy') }}" 
+        device_class: energy
+        state_class: total_increasing
+        unit_of_measurement: 'kWh'
+      - name : grid_return_negative         
+        state: "{{ 0 - states('sensor.grid_return') | float }}"
+        device_class: power
+        state_class: measurement
+        unit_of_measurement: 'W'
+
+
+
+
+
+sensor:
+# sensors voor tesla-style-solar-power-card
+  - platform: random
+    name: PV_total_power
+    minimum: 2000
+    maximum: 8000
+    unit_of_measurement: 'W'
+  - platform: random
+    name: emon_power
+    minimum: 800
+    maximum: 1500
+    unit_of_measurement: 'W'
+  - platform: random
+    name: laadpaal_power
+    minimum: 3000
+    maximum: 3500
+    unit_of_measurement: 'W'
+    unit_of_measurement: 'W'
+  - platform: random
+    name: espaltherma_indoor_temp
+    minimum: 19
+    maximum: 22
+    unit_of_measurement: '°C' 
+  - platform: random
+    name: buienradar_irradiance
+    minimum: 19
+    maximum: 22
+    unit_of_measurement: 'W/m²'
+# sensors voor energy dashboard
+  - platform: integration
+    name: PV_total_energy
+    source: sensor.PV_total_power
+    unit_prefix: k
+    round: 2
+  - platform: integration
+    name: grid_consumption_energy
+    source: sensor.grid_consumption
+    unit_prefix: k
+    round: 2
+  - platform: integration
+    name: grid_return_energy
+    source: sensor.grid_return
+    unit_prefix: k
+    round: 2
+  - platform: integration
+    name: warmtepomp_energy
+    source: sensor.emon_power
+    unit_prefix: k
+    round: 2
+  - platform: integration
+    name: laadpaal_energy
+    source: sensor.laadpaal_power
+    unit_prefix: k
+    round: 2
+

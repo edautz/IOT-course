@@ -1,0 +1,67 @@
+﻿Tesla style power card
+
+type: custom:tesla-style-solar-power-card
+show_w_not_kw: 1
+show_gap: true
+change_house_bubble_color_with_flow: 1
+name: Energie stromen
+grid_to_house_entity: sensor.grid_to_house
+generation_to_grid_entity: sensor.pv_to_grid
+generation_to_house_entity: sensor.pv_to_house
+appliance1_consumption_entity: sensor.emon_power
+appliance1_extra_entity: sensor.altherma
+appliance2_consumption_entity: sensor.laadpaal_power
+grid_entity: sensor.current_power
+house_entity: sensor.house_power
+house_extra_entity: sensor.espaltherma_indoor_temp
+generation_extra_entity: sensor.buienradar_irradiance
+generation_entity: sensor.pv_total_power
+grid_icon: mdi:transmission-tower
+generation_icon: mdi:solar-panel-large
+appliance1_icon: mdi:radiator
+appliance2_icon: mdi:car-sports
+Apex energie card:
+
+type: custom:apexcharts-card
+header:
+  show: true
+  title: Vermogen (5min gem)
+  show_states: true
+  colorize_states: true
+apex_config:
+  chart:
+    height: 350
+    zoom:
+      type: x
+      enabled: true
+      autoScaleYaxis: false
+    toolbar:
+      show: true
+      autoselected: zoom
+    xaxis.type: datetime
+  stroke:
+    width: 1
+    curve: smooth
+series:
+  - entity: sensor.pv_total_power
+    name: Opwek
+    type: area
+    group_by:
+      func: avg
+      duration: 5min
+  - entity: sensor.grid_return_negative
+    name: Teruglevering
+    type: area
+    group_by:
+      func: avg
+      duration: 5min
+  - entity: sensor.grid_consumption
+    name: Verbruik
+    type: area
+    group_by:
+      func: avg
+      duration: 5min
+color_list:
+  - '#ff9800'
+  - '#8353d1'
+  - '#ee6c41'
