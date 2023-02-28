@@ -1,4 +1,4 @@
-
+Tesla style power card:
 
 type: custom:tesla-style-solar-power-card
 show_w_not_kw: 1
@@ -21,6 +21,9 @@ generation_icon: mdi:solar-panel-large
 appliance1_icon: mdi:radiator
 appliance2_icon: mdi:car-sports
 Apex energie card:
+
+
+Apex chart:
 
 type: custom:apexcharts-card
 header:
