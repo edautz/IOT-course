@@ -1,0 +1,133 @@
+﻿# Naam device
+esphome:
+  name: dht11-relay
+  
+# Hardware type
+esp8266:
+  board: nodemcuv2
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret password
+  # services callable from homeassistant    
+  services:
+    - service: relay_turn_on
+      then:
+        - switch.turn_on: relay
+    - service: relay_turn_off
+      then: 
+        - switch.turn_off: relay 
+
+# O(n)t(he)a(ir), Firmware update through Wifi.
+ota:
+  password: !secret ota_password
+
+# Wifi credentials
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+   # Enable fallback hotspot als wifi connectie niet tot stand te brengen is.
+#ap: 
+   #ssid: "Dht22-Relay Fallback Hotspot"
+   #password: "m2CumQAGsbAc"
+
+  # Benaderen van het device op het oude IP adres om bv een nieuw IP adres toe te kennen. 
+  #use_address: 192.168.2.21
+  # Als mDNS niet werkt zijn statisch gedefineerde ip adressen noodzakelijk voor o.a. OTA upgrade en toegang (visit)
+  #manual_ip: 
+  #  static_ip: 192.168.2.21
+  #  gateway: 192.168.2.1
+  #  subnet: 255.255.255.0
+
+# Nodig voor WIFI hotspot
+#captive_portal:
+
+# Webserver binnen de ESP8266
+web_server:
+  local: true
+  port: 80
+  auth:
+    username: !secret password
+    password: !secret password
+
+# Time source
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+# Sensors software & hardware 
+sensor:
+  - platform: uptime
+    name: Uptime Sensor
+    id: uptime_sensor
+    update_interval: 60s
+    internal: true
+    on_raw_value:
+      then:
+        - text_sensor.template.publish:
+            id: uptime_human
+            state: !lambda |-
+              int seconds = round(id(uptime_sensor).raw_state);
+              int days = seconds / (24 * 3600);
+              seconds = seconds % (24 * 3600);
+              int hours = seconds / 3600;
+              seconds = seconds % 3600;
+              int minutes = seconds / 60;
+              seconds = seconds % 60;
+              return (
+                    (days ? to_string(days) + "d " : "") +
+                    (hours ? to_string(hours) + "h " : "") +
+                    (minutes ? to_string(minutes) + "m " : "") +
+                    (to_string(seconds) + "s")
+              ).c_str();
+
+  - platform: wifi_signal
+    name: WiFi Signal Sensor
+    update_interval: 60s
+
+  - platform: dht
+    model: DHT11
+    pin: D5
+    temperature: 
+      name: "IOT temperatuur"
+    humidity:
+      name: "IOT vochtigheid"
+    update_interval: 10s 
+
+# Relay 
+switch:
+  - platform: gpio
+    id: relay
+    name: "Relay"
+    pin: D6
+    inverted: true
+
+# HA API connect status
+binary_sensor:
+# API connect status
+  - platform: status
+    name: Status HA API connectie
+
+# Diag info
+text_sensor:
+  - platform: version
+    name: ESPHome Info
+    icon: "mdi:chip"
+  - platform: wifi_info
+    ip_address:
+        name: IP Address
+        icon: mdi:ip-network
+    ssid:
+        name: Netwerk
+        icon: mdi:access-point-network
+    mac_address:
+        name: Mac adres
+        icon: mdi:folder-key-network-outline
+  - platform: template
+    name: Uptime
+    id: uptime_human
+    icon: mdi:clock-start
