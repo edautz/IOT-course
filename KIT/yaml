@@ -49,7 +49,7 @@ wifi:
 # Nodig voor WIFI hotspot
 #captive_portal:
 
-# Webserver binnen de ESP8266
+# Webserver binnen de ESP32
 web_server:
   local: true
   port: 80
