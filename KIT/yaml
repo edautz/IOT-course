@@ -24,7 +24,7 @@ api:
       then: 
         - switch.turn_off: relay 
 
-# O(n)t(he)a(ir), Firmware update through Wifi.
+# O(ver)t(he)a(ir), Firmware update through Wifi.
 ota:
   password: !secret ota_password
 
@@ -36,15 +36,17 @@ wifi:
    # Enable fallback hotspot als wifi connectie niet tot stand te brengen is.
 #ap: 
    #ssid: "Dht22-Relay Fallback Hotspot"
-   #password: "m2CumQAGsbAc"
+   #password: !secret Fallback_password
 
   # Benaderen van het device op het oude IP adres om bv een nieuw IP adres toe te kennen. 
+  # LETOP: Dit kan op een ander nerkwerk een IP adres/gw uit een ander subnet met een ander mask, zijn!
   #use_address: 192.168.2.21
   # Als mDNS niet werkt zijn statisch gedefineerde ip adressen noodzakelijk voor o.a. OTA upgrade en toegang (visit)
   #manual_ip: 
   #  static_ip: 192.168.2.21
   #  gateway: 192.168.2.1
   #  subnet: 255.255.255.0
+  # LETOP: Dit kan op een ander nerkwerk een IP adres/gw uit een ander subnet met een ander mask, zijn!
 
 # Nodig voor WIFI hotspot
 #captive_portal:
